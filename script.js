@@ -164,9 +164,9 @@ let cosEntities = [];
 let sinEntities = [];
 const player = new Entity("clark.jpg",20,-100,45,60,100,3,1);
 const boss = new Entity("evilwizard.png",WIDTH-40,200,45,60,100,5,-1);
-let easySwordSpawnInterval = 20;
-let mediumSwordSpawnInterval = 40;
-let difficultSwordSpawnInterval = 20;
+let easySwordSpawnInterval = 1;
+let mediumSwordSpawnInterval = 1;
+let difficultSwordSpawnInterval = 1;
 let swordSpawnInterval = easySwordSpawnInterval;
 let sword = new Entity("easysword.png",375,1000,50,65,1000,0,0);
 let swordSpawned = false;
@@ -383,7 +383,9 @@ function fightScreen()
     {
         let randomX = Math.random() * 350 + 25;
         flybotinterval = 10;
-        let danger = new Entity("danger.png",randomX,200,50,50);
+        let dangerstripes = new Entity("dangerstripes.jpeg",randomX,0,170,HEIGHT*1.5,0,0,0);
+        alphaEntities.push(dangerstripes)
+        let danger = new Entity("danger.png",randomX + 65,200,50,50);
         alphaEntities.push(danger);
         setTimeout(()=>
         {
