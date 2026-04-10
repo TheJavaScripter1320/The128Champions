@@ -1,3 +1,5 @@
+
+alert("I found that the game was a bit difficult for all of us because I didn't give instructions and make balances so here they are... Arrow Keys Left and Right to move left and right. Arrow Key Down to crouch which is good for reducing hitbox in certain situations but cannot jump when crouching to avoid abuse of small hitbox and Arrow Key Up / Space to jump. Play as Mr. Clark and defeat the Evil English Wizard to be rewarded by the Oracle of ELA!. Level 1 which is the Start and 20 secs long - Only fire orbs that you can crouch to / jump above. Level 2 which is after first sword and 40 secs long - Boss now shoots out spiraling fire orbs at a low chance and spawns green orbs which blind the player for 3 secs and gives +5 HP! Crouching is also your best chance against spiraling fire orbs. Level 3 which is after your second sword and 20 secs long - Boss now has tally bot tickerson that falls from the sky and come with a warning. Pay your tickets next time.");
 try {
 window.addEventListener("load",function() {
 
@@ -223,6 +225,87 @@ let blindorbsinterval = 5;
 let alphaEntities = [];
 let flybot = new Entity("flybot.png",-200,0,170,185,0,0,0);
 
+function gameIntervals() 
+{
+    if (blindorbsinterval <= 0 && (boss.mode === "difficult" || boss.mode === "medium")) 
+    {
+        blindorbs.push(new Entity("greenblast.png",Math.random() * 350 + 25,-150,50,50,1000,0,0));
+        blindorbsinterval = 10;
+    }
+    if (flybotinterval <= 0 && boss.mode === "difficult") 
+    {
+        let randomX = Math.random() * 350 + 25;
+        flybotinterval = 10;
+        let dangerstripes = new Entity("dangerstripes.jpeg",randomX,0,170,HEIGHT*1.5,0,0,0);
+        alphaEntities.push(dangerstripes)
+        let danger = new Entity("danger.png",randomX + 65,200,50,50);
+        alphaEntities.push(danger);
+        setTimeout(()=>
+        {
+            flybot.y = -100;
+            flybot.x = randomX;
+        },1500);
+    }
+    if (bossMoveInterval <= 0) 
+    {
+        boss.move2();
+        boss.direction *= -1;
+        bossMoveInterval = Math.random() * 15 + 15;
+        //bossMoveInterval = Math.random() * 15 + 15;
+    }
+    if (swordSpawnInterval <= 0 && !swordSpawned) 
+    {
+        sword.y = -50;
+        sword.x = Math.random() * 200 + 100;
+        swordSpawned = true;
+    }
+    if (bossAttackInterval <= 0) 
+    {
+        boss.attack();
+        bossAttackInterval = Math.random() * 2 + bossAttackRate;
+    }
+}
+
+function gameLogic() 
+{
+    for (let entity of cosEntities) 
+    {
+        entity.y = entity.y + Math.cos(entity.cosVal/20) * 6;
+        entity.cosVal += 2;
+    }
+    for (let orb of boss.orbs) 
+    {
+        orb.x += orb.speed * orb.direction;
+        CTX.drawImage(orb.img,orb.x,orb.y,orb.w,orb.h);
+        if (orb.isTouching(player) && !player.immune) 
+        {
+            player.health -= 34;
+            boss.orbs.splice(boss.orbs.indexOf(orb),1);
+            player.immunefor = 3;
+        }
+    }
+    for (let orb of blindorbs) 
+    {
+        if (player.isTouching(orb)) 
+        {
+            blindorbs.splice(blindorbs.indexOf(orb),1);
+            let newThingie = new Entity("ashbaby.jpeg",0,0,WIDTH,HEIGHT,0,0,0);
+            alphaEntities.push(newThingie);
+            player.health += 5;
+        }
+        orb.update();
+        orb.draw();
+    }
+    for (let entity of alphaEntities) 
+    {
+        if (entity.alpha <= 0) {
+            alphaEntities.splice(alphaEntities.indexOf(entity),1);
+            return;
+        }
+        entity.draw();
+    }
+}
+
 function startScreen() 
 {
     CTX.globalAlpha = 1;
@@ -301,6 +384,8 @@ function fightScreen()
     sword.draw();
     flybot.y += 4;
     flybot.draw();
+    gameIntervals();
+    gameLogic();
 
     if (swordSpawned) sword.update();
     if (flybot.isTouching(player) && player.immunefor <= 0) 
@@ -335,82 +420,6 @@ function fightScreen()
                 boss.mode = "easy";
                 break;
         }
-    }
-    if (swordSpawnInterval <= 0 && !swordSpawned) 
-    {
-        sword.y = -50;
-        sword.x = Math.random() * 200 + 100;
-        swordSpawned = true;
-    }
-    for (let entity of cosEntities) 
-    {
-        entity.y = entity.y + Math.cos(entity.cosVal/20) * 6;
-        entity.cosVal += 2;
-    }
-    for (let entity of sinEntities) 
-    {
-        entity.x = entity.x - Math.cos(entity.cosVal/20) * 3;
-    }
-    if (bossMoveInterval <= 0) 
-    {
-        boss.move2();
-        boss.direction *= -1;
-        bossMoveInterval = Math.random() * 15 + 15;
-        //bossMoveInterval = Math.random() * 15 + 15;
-    }
-    if (bossAttackInterval <= 0) 
-    {
-        boss.attack();
-        bossAttackInterval = Math.random() * 2 + bossAttackRate;
-    }
-    for (let orb of boss.orbs) 
-    {
-        orb.x += orb.speed * orb.direction;
-        CTX.drawImage(orb.img,orb.x,orb.y,orb.w,orb.h);
-        if (orb.isTouching(player) && !player.immune) 
-        {
-            player.health -= 34;
-            boss.orbs.splice(boss.orbs.indexOf(orb),1);
-            player.immunefor = 3;
-        }
-    }
-    if (blindorbsinterval <= 0 && (boss.mode === "difficult" || boss.mode === "medium")) 
-    {
-        blindorbs.push(new Entity("greenblast.png",Math.random() * 350 + 25,-150,50,50,1000,0,0));
-        blindorbsinterval = 10;
-    }
-    if (flybotinterval <= 0 && boss.mode === "difficult") 
-    {
-        let randomX = Math.random() * 350 + 25;
-        flybotinterval = 10;
-        let dangerstripes = new Entity("dangerstripes.jpeg",randomX,0,170,HEIGHT*1.5,0,0,0);
-        alphaEntities.push(dangerstripes)
-        let danger = new Entity("danger.png",randomX + 65,200,50,50);
-        alphaEntities.push(danger);
-        setTimeout(()=>
-        {
-            flybot.y = -100;
-            flybot.x = randomX;
-        },1500);
-    }
-    for (let orb of blindorbs) 
-    {
-        if (player.isTouching(orb)) 
-        {
-            blindorbs.splice(blindorbs.indexOf(orb),1);
-            let newThingie = new Entity("ashbaby.jpeg",0,0,WIDTH,HEIGHT,0,0,0);
-            alphaEntities.push(newThingie);
-        }
-        orb.update();
-        orb.draw();
-    }
-    for (let entity of alphaEntities) 
-    {
-        if (entity.alpha <= 0) {
-            alphaEntities.splice(alphaEntities.indexOf(entity),1);
-            return;
-        }
-        entity.draw();
     }
     CTX.fillStyle = "white";
     CTX.fillRect(20,20,220,70);
