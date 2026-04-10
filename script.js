@@ -165,8 +165,8 @@ let sinEntities = [];
 const player = new Entity("clark.jpg",20,-100,45,60,100,3,1);
 const boss = new Entity("evilwizard.png",WIDTH-40,200,45,60,100,5,-1);
 let easySwordSpawnInterval = 20;
-let mediumSwordSpawnInterval = 30;
-let difficultSwordSpawnInterval = 40;
+let mediumSwordSpawnInterval = 40;
+let difficultSwordSpawnInterval = 20;
 let swordSpawnInterval = easySwordSpawnInterval;
 let sword = new Entity("easysword.png",375,1000,50,65,1000,0,0);
 let swordSpawned = false;
@@ -212,7 +212,7 @@ boss.attack = () =>
         boss.orbs.push(specialAttack);
         return;
     }
-    boss.orbs.push(new Entity("fireorb.png",boss.x + boss.w/2,(boss.y - boss.h/3 + Math.random() * boss.h),boss.w,boss.h,1000,5,boss.direction));
+    boss.orbs.push(new Entity("fireorb.png",boss.x + boss.w/2,(boss.y - boss.h/2 + Math.random() * boss.h),boss.w,boss.h,1000,5,boss.direction));
 }
 bossMoveInterval = Math.random() * 15 + 15;
 bossAttackInterval = Math.random() * 2 + 0.5;
@@ -244,6 +244,7 @@ function startScreen()
         cosEntities = [];
         alphaEntities = [];
         sword.img.src = "easysword.png";
+        sword.x = -100;
         player.x = 20;
         player.direction = -1;
         boss.mode = "easy";
@@ -274,6 +275,10 @@ function decisecond()
 
 function fightScreen() 
 {
+    if (player.health > 100) 
+    {
+        player.health = 100;
+    }
     if (boss.health <= 0) 
     {
         stage = 2;
@@ -308,6 +313,7 @@ function fightScreen()
     if (player.isTouching(sword)) 
     {
         sword.y = 1000;
+        player.health += 25;
         boss.health -= 100;
         swordSpawned = false;
         switch(boss.mode) 
@@ -333,6 +339,7 @@ function fightScreen()
     if (swordSpawnInterval <= 0 && !swordSpawned) 
     {
         sword.y = -50;
+        sword.x = Math.random() * 200 + 100;
         swordSpawned = true;
     }
     for (let entity of cosEntities) 
@@ -342,7 +349,7 @@ function fightScreen()
     }
     for (let entity of sinEntities) 
     {
-        entity.x = entity.x + Math.cos(entity.cosVal/20) * 3;
+        entity.x = entity.x - Math.cos(entity.cosVal/20) * 3;
     }
     if (bossMoveInterval <= 0) 
     {
@@ -418,6 +425,8 @@ function fightScreen()
 
 function winScreen() 
 {
+    CTX.textAlign = "left";
+    CTX.textBasline = "top";
     CTX.globalAlpha = 1;
     CTX.drawImage(olympus,0,0,WIDTH,HEIGHT);
     CTX.drawImage(clarkImg,150,275,126,145)
@@ -428,7 +437,8 @@ function winScreen()
     CTX.font = "40px Monospace";
     CTX.fillText("ORACLE : ",50,445);
     CTX.font = "20px Arial"
-    CTX.fillText("Thanks for saving the 128 Nation from the Evil Wizard of English. Here have a cookie or something now bye.",50,475)
+    CTX.fillText("Thanks for saving the 128 Nation from the Evil Wizard of English.",50,475);
+    CTX.fillText("Have a cookie now bye",50,520);
 }
 
 function animate() 
