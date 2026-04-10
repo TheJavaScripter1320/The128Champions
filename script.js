@@ -403,7 +403,16 @@ function fightScreen()
         }
         entity.draw();
     }
-    CTX.fillText("X : " + flybot.x + "Y : " + flybot.y + "INTERVAL : "+ flybotinterval + "DIFFICULTY" + boss.mode,100,50);
+    CTX.fillStyle = "white";
+    CTX.fillRect(20,20,220,70);
+    CTX.fillStyle = "green";
+    CTX.fillRect(30,30,200 * player.health/100,50);
+    CTX.fillStyle = "black";
+    CTX.font = "40px Monospace";
+    CTX.textAlign = "center";
+    CTX.textBasline = "top";
+    CTX.fillText("HP : " + player.health,130,70)
+    //CTX.fillText("X : " + flybot.x + "Y : " + flybot.y + "INTERVAL : "+ flybotinterval + "DIFFICULTY" + boss.mode,100,50);
 
 }
 
