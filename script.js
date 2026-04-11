@@ -275,6 +275,7 @@ function gameIntervals()
 function resetGame() 
 {
     playingMusic = false;
+    stage = 1;
     boss.y = -100;
     boss.orbs = [];       
     boss.x = WIDTH - boss.w - 20;
