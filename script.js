@@ -1,5 +1,5 @@
 
-alert("I found that the game was a bit difficult for all of us because I didn't give instructions and make balances so here they are... Arrow Keys Left and Right to move left and right. Arrow Key Down to crouch which is good for reducing hitbox in certain situations but cannot jump when crouching to avoid abuse of small hitbox and Arrow Key Up / Space to jump. Play as Mr. Clark and defeat the Evil English Wizard to be rewarded by the Oracle of ELA!. Level 1 which is the Start and 20 secs long - Only fire orbs that you can crouch to / jump above. Level 2 which is after first sword and 40 secs long - Boss now shoots out spiraling fire orbs at a low chance and spawns green orbs which blind the player for 3 secs and gives +5 HP! Crouching is also your best chance against spiraling fire orbs. Level 3 which is after your second sword and 20 secs long - Boss now has tally bot tickerson that falls from the sky and come with a warning. Pay your tickets next time.");
+alert("I found that the game was a bit difficult for all of us because I didn't give instructions and make balances so here they are... Bugs may be present I'm sorry! DEBUG MODE had been added and you can't get rid of it. Displays hitboxes so that people don't have to start questioning the game. Full Screen Mode does not support clicking so when activating full screen you automatically start the game and enter full screen to prevent delay from playing. Arrow Keys Left and Right to move left and right. Arrow Key Down to crouch which is good for reducing hitbox in certain situations but cannot jump when crouching to avoid abuse of small hitbox and Arrow Key Up / Space to jump. Play as Mr. Clark and defeat the Evil English Wizard to be rewarded by the Oracle of ELA!. Level 1 which is the Start and 20 secs long - Only fire orbs that you can crouch to / jump above. Level 2 which is after first sword and 40 secs long - Boss now shoots out spiraling fire orbs at a low chance and spawns green orbs which blind the player for 3 secs and gives +5 HP! Crouching is also your best chance against spiraling fire orbs. Level 3 which is after your second sword and 20 secs long - Boss now has tally bot tickerson that falls from the sky and come with a warning. Pay your tickets next time.");
 try {
 window.addEventListener("load",function() {
 
@@ -43,6 +43,10 @@ class Entity extends EntitySetup
     {
         CTX.globalAlpha = this.alpha;
         CTX.drawImage(this.img,this.x,this.y,this.w,this.h);
+        CTX.globalAlpha = 0.15;
+        CTX.fillStyle = "green";
+        CTX.fillRect(this.x,this.y,this.w,this.h);
+        CTX.globalAlpha = 1;
     }
     handlePlayerImg() 
     {
@@ -150,6 +154,7 @@ let stage = 0;
 FULLSCREENBTN.addEventListener("click",()=>
 {
     CANVAS.requestFullscreen();
+    stage = 1;
 });
 const startScreenImg = new Image();
 startScreenImg.src = "startscreen.png";
@@ -166,9 +171,9 @@ let cosEntities = [];
 let sinEntities = [];
 const player = new Entity("clark.jpg",20,-100,45,60,100,3,1);
 const boss = new Entity("evilwizard.png",WIDTH-40,200,45,60,100,5,-1);
-let easySwordSpawnInterval = 20;
-let mediumSwordSpawnInterval = 40;
-let difficultSwordSpawnInterval = 20;
+let easySwordSpawnInterval = 1;
+let mediumSwordSpawnInterval = 1;
+let difficultSwordSpawnInterval = 1;
 let swordSpawnInterval = easySwordSpawnInterval;
 let sword = new Entity("easysword.png",375,1000,50,65,1000,0,0);
 let swordSpawned = false;
@@ -276,7 +281,7 @@ function gameLogic()
     for (let orb of boss.orbs) 
     {
         orb.x += orb.speed * orb.direction;
-        CTX.drawImage(orb.img,orb.x,orb.y,orb.w,orb.h);
+        orb.draw();
         if (orb.isTouching(player) && !player.immune) 
         {
             player.health -= 34;
@@ -365,6 +370,7 @@ function fightScreen()
     if (boss.health <= 0) 
     {
         stage = 2;
+        playingMusic = false;
     }
     player.immune = player.immunefor > 0 ? true : false;
     if (player.immune) 
@@ -457,7 +463,7 @@ function animate()
     if (!playingMusic) {
     currentaudio.currentTime = 0;
     currentaudio.pause();
-    switch (stage) 
+    /*switch (stage) 
     {
         case 0:
             currentaudio = startaudio;
@@ -468,13 +474,22 @@ function animate()
         case 2: 
             currentaudio = winaudio;
             break;
+    } */
+    if (stage === 0) 
+    {
+        currentaudio = startaudio;
+    } else if (stage === 1) 
+    {
+        currentaudio = playaudio;
+    } else if (stage === 2) 
+    {
+        currentaudio = winaudio;
     }
     playingMusic = true;
     currentaudio.currentTime = 0;
     currentaudio.preload = "auto";
     currentaudio.play();
     }
-    try {
     CTX.clearRect(0,0,WIDTH,HEIGHT);
     if (player.health <= 0) 
     {
@@ -495,10 +510,6 @@ function animate()
             break;
     }
     requestAnimationFrame(animate);
-    } catch(error) 
-    {
-        document.body.innerHTML += "<p>"+error+"</p>"
-    }
 } animate();
 });
 } catch(error) 
