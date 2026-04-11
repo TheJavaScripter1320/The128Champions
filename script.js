@@ -155,6 +155,7 @@ FULLSCREENBTN.addEventListener("click",()=>
 {
     CANVAS.requestFullscreen();
     stage = 1;
+    resetGame();
 });
 const startScreenImg = new Image();
 startScreenImg.src = "startscreen.png";
@@ -271,6 +272,31 @@ function gameIntervals()
     }
 }
 
+function resetGame() 
+{
+    playingMusic = false;
+    boss.y = -100;
+    boss.orbs = [];       
+    boss.x = WIDTH - boss.w - 20;
+    bossMoveInterval = Math.random() * 15 + 15; 
+    boss.direction = -1;
+    blindorbs = [];
+    cosEntities = [];
+    alphaEntities = [];
+    sword.img.src = "easysword.png";
+    sword.x = -100;
+    player.x = 20;
+    player.direction = -1;
+    boss.mode = "easy";
+    boss.health = 300;
+    sinEntities = [];
+    bossAttackRate = 1;
+    swordSpawnInterval = easySwordSpawnInterval;
+    flybot.x = -200;
+    player.y = -100;
+    flybotinterval = 10;
+}
+
 function gameLogic() 
 {
     for (let entity of cosEntities) 
@@ -321,28 +347,7 @@ function startScreen()
         InputHandler.defaultObj.mouse.x < 264 + 240 && InputHandler.defaultObj.mouse.y < 426 + 55
     ) 
     {
-        playingMusic = false;
-        stage = 1;
-        boss.y = -100;
-        boss.orbs = [];       
-        boss.x = WIDTH - boss.w - 20;
-        bossMoveInterval = Math.random() * 15 + 15; 
-        boss.direction = -1;
-        blindorbs = [];
-        cosEntities = [];
-        alphaEntities = [];
-        sword.img.src = "easysword.png";
-        sword.x = -100;
-        player.x = 20;
-        player.direction = -1;
-        boss.mode = "easy";
-        boss.health = 300;
-        sinEntities = [];
-        bossAttackRate = 1;
-        swordSpawnInterval = easySwordSpawnInterval;
-        flybot.x = -200;
-        player.y = -100;
-        flybotinterval = 10;
+        resetGame();
     }
 }
 
