@@ -154,8 +154,7 @@ let stage = 0;
 FULLSCREENBTN.addEventListener("click",()=>
 {
     CANVAS.requestFullscreen();
-    stage = 1;
-    resetGame();
+    if (state === 0) resetGame();
 });
 const startScreenImg = new Image();
 startScreenImg.src = "startscreen.png";
